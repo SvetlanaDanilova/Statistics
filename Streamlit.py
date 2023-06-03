@@ -96,7 +96,7 @@ if uploaded_file is not None:
   male = df[df['sex'] == 0]['work_days']
   female = df[df['sex'] == 1]['work_days']
 
-  st.markdown('Гипотеза 1: Мужчины пропускают в течение года более n рабочих дней по болезни значимо чаще женщин')
+  st.markdown('Гипотеза 1: Мужчины пропускают в течение года более n рабочих дней по болезни значимо чаще женщин.')
 
   fig = plt.figure(figsize=(15, 10))
   plt.title('Histogram Density Function')
@@ -105,13 +105,11 @@ if uploaded_file is not None:
   plt.xlabel('work_days')
   plt.ylabel('Density')
   plt.legend()
-
   st.pyplot(fig)
   
   number_of_days = max(df['work_days'])
-  days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days-1, 2)
-  
-  df['more_n_days'] = np.where(df['work_days'] > days, 1, 0)
+  s_days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days-1, 2)
+  df['more_n_days'] = np.where(df['work_days'] > s_days, 1, 0)
 
   male = df[df['sex'] == 0]['more_n_days']
   female = df[df['sex'] == 1]['more_n_days']
@@ -121,6 +119,32 @@ if uploaded_file is not None:
   st.write(f"женщин : {sum(female) / len(female):.4f}")
   st.write("##")
     
-  alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 0.05)
+  s_alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 0.05)
+  all_tests(male, female, s_alpha)
   
-  all_tests(male, female, alpha)
+  
+  st.markdown('Гипотеза 2: Работники старше m лет пропускают в течение года более n рабочих дней (work_days) по болезни значимо чаще своих более молодых коллег.')
+  
+  days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days-1, 2)
+  df['more_n_days'] = np.where(df['work_days'] > days, 1, 0)
+  
+  max_age = max(df['age'])
+  age = st.slider('Задайте граничное количество лет m в гипотезе', 0, max_age-1, 35)
+  old = df[df['age'] > age]['work_days']
+  young = df[df['age'] <= age]['work_days']
+  
+  plt.title('Histogram Density Function')
+  plt.hist(old, density=True, alpha=0.5, label='age > ' + str(age), bins=9)
+  plt.hist(young, density=True, alpha=0.5, label='age <= ' + str(age), bins=9)
+  plt.xlabel('work_days')
+  plt.ylabel('Density')
+  plt.legend()
+  plt.show()
+  
+  st.write("**Частота пропуска для**")
+  st.write(f"более взрослых людей : {sum(old) / len(old):.4f}")
+  st.write(f"менее взрослых людей : {sum(young) / len(young):.4f}")
+  st.write("##")
+  
+  a_alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 0.05)
+  all_tests(old, young, a_alpha)
