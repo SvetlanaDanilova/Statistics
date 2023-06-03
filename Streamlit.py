@@ -94,7 +94,7 @@ if uploaded_file is not None:
   stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
   st.write("**Mann–Whitney U Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
-  if p-value < alpha:
+  if p_value < alpha:
     st.write("Отвергаем гипотезу о том, что частота пропусков одинаковая")
   else:
     st.write("Не отвергаем гипотезу о том, что частота пропусков одинаковая")
