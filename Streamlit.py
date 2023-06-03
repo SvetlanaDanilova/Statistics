@@ -98,14 +98,14 @@ if uploaded_file is not None:
 
   st.markdown('Гипотеза 1: Мужчины пропускают в течение года более n рабочих дней по болезни значимо чаще женщин.')
 
-  fig = plt.figure(figsize=(15, 10))
+  fig1 = plt.figure(figsize=(15, 10))
   plt.title('Histogram Density Function')
   plt.hist(male, density=True, alpha=0.5, label='Sex = М', bins=9)
   plt.hist(female, density=True, alpha=0.5, label='Sex = Ж', bins=9)
   plt.xlabel('work_days')
   plt.ylabel('Density')
   plt.legend()
-  st.pyplot(fig)
+  st.pyplot(fig1)
   
   number_of_days = max(df['work_days'])
   s_days = st.slider('Задайте количество дней n в гипотезе 1', 0, number_of_days-1, 2)
@@ -133,6 +133,7 @@ if uploaded_file is not None:
   old = df[df['age'] > age]['work_days']
   young = df[df['age'] <= age]['work_days']
   
+  fig2 = plt.figure(figsize=(15, 10))
   plt.title('Histogram Density Function')
   plt.hist(old, density=True, alpha=0.5, label='age > ' + str(age), bins=9)
   plt.hist(young, density=True, alpha=0.5, label='age <= ' + str(age), bins=9)
@@ -140,7 +141,7 @@ if uploaded_file is not None:
   plt.ylabel('Density')
   plt.legend()
   plt.show()
-  st.pyplot(fig)
+  st.pyplot(fig2)
   
   st.write("**Частота пропуска для**")
   st.write(f"более взрослых людей : {sum(old) / len(old):.4f}")
