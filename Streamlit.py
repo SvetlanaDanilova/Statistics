@@ -5,8 +5,48 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import rcParams
+from math import lgamma
 
 from scipy.stats import mannwhitneyu, kstest, ttest_ind, beta
+
+def h(a, b, c, d):
+    num = lgamma(a + c) + lgamma(b + d) + lgamma(a + b) + lgamma(c + d)
+    den = lgamma(a) + lgamma(b) + lgamma(c) + lgamma(d) + lgamma(a + b + c + d)
+    return np.exp(num - den)
+
+def g0(a, b, c):    
+    return np.exp(lgamma(a + b) + lgamma(a + c) - (lgamma(a + b + c) + lgamma(a)))
+
+def hiter(a, b, c, d):
+    while d > 1:
+        d -= 1
+        yield h(a, b, c, d) / d
+
+def g(a, b, c, d):
+    return g0(a, b, c) + sum(hiter(a, b, c, d))
+
+def calc_prob_between(beta1, beta2):
+    return g(beta1.args[0], beta1.args[1], beta2.args[0], beta2.args[1])
+
+def ab_test(old, new):
+    #This is the known data: impressions and conversions for the Control and Test set
+    imps_ctrl, convs_ctrl = len(old), sum(old)
+    imps_test, convs_test = len(new), sum(new)
+
+    #here we create the Beta functions for the two sets
+    a_C, b_C = convs_ctrl+1, imps_ctrl-convs_ctrl+1
+    beta_C = beta(a_C, b_C)
+    a_T, b_T = convs_test+1, imps_test-convs_test+1
+    beta_T = beta(a_T, b_T)
+
+    #calculating the lift
+    lift=(beta_T.mean()-beta_C.mean())/beta_C.mean()
+
+    #calculating the probability for Test to be better than Control
+    prob=calc_prob_between(beta_T, beta_C)
+
+    st.write(f"Test option lift Conversion Rates by {lift*100:2.2f}% with {prob*100:2.1f}% probability.")
+    st.write("##")
 
 sns.set()
 rcParams['figure.figsize'] = 10, 6
@@ -58,13 +98,5 @@ if uploaded_file is not None:
   st.write("**Kolmogorov-Smirnov Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
   st.write("##")
-  
-  sample_stat = np.mean(male) - np.mean(female)
-  stats = np.zeros(1000)
-  for k in range(1000):
-    labels = np.random.permutation((df['sex'] == 0).values)
-    stats[k] = np.mean(df.more_n_days[labels]) - np.mean(df.more_n_days[labels==False])
-  p_value = np.mean(stats > sample_stat)
-  st.write("**Permutation Test**")
-  st.write(f"p-value = {p_value:.4f}")
-  st.write("##")
+
+  ab_test(female, male)
