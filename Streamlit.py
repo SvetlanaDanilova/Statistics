@@ -3,6 +3,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.figure_factory as ff
+import matplotlib.pyplot as plt
 
 uploaded_file = st.file_uploader('Выберите файл для анализа данных с расширением csv')
 
@@ -15,3 +16,14 @@ female = df[df['sex'] == 1]['work_days']
 
 st.title('Проверка гипотез')
 st.markdown('Гипотеза 1: Мужчины пропускают в течение года более 2 рабочих дней по болезни значимо чаще женщин')
+
+fig = plt.figure(figsize=(15, 10))
+plt.title('Histogram Density Function')
+plt.hist(male, density=True, alpha=0.5, label='Sex = М', bins=9)
+plt.hist(female, density=True, alpha=0.5, label='Sex = Ж', bins=9)
+plt.xlabel('work_days')
+plt.ylabel('Density')
+plt.legend()
+plt.show()
+
+st.plotly_chart(fig, use_container_width=True)
