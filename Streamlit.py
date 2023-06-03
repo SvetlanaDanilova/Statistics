@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 
 uploaded_file = st.file_uploader('Выберите файл для анализа данных с расширением csv')
 
-df = pd.read_csv(uploaded_file)  
+if uploaded_file is not None:
+  df = pd.read_csv(uploaded_file)
+
 df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
 df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
 
