@@ -125,7 +125,7 @@ if uploaded_file is not None:
   
   st.markdown('Гипотеза 2: Работники старше m лет пропускают в течение года более n рабочих дней по болезни значимо чаще своих более молодых коллег.')
   
-  a_days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days-1, 2)
+  a_days = st.slider('Задайте количество дней n в гипотезе 2', 0, number_of_days-1, 2)
   df['more_n_days'] = np.where(df['work_days'] > a_days, 1, 0)
   
   max_age = max(df['age'])
