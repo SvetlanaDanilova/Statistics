@@ -42,14 +42,16 @@ if uploaded_file is not None:
   female = df[df['sex'] == 1]['more_2_days']
   
   st.markdown("**Частота пропуска больше двух дней для**")
-  st.markdown(f"                                        мужчин = {sum(male) / len(male):.4f}")
-  st.markdown(f"                                        женщин = {sum(female) / len(female):.4f}")
+  st.markdown(f"мужчин : {sum(male) / len(male):.4f}")
+  st.markdown(f"женщин : {sum(female) / len(female):.4f}")
   
   stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
-  st.markdown(f" Mann–Whitney U Test: statistic={stat:.4f}, p-value={p_value:.4f}")
+  st.markdown("**Mann–Whitney U Test**")
+  st.markdown(f"statistic={stat:.4f}, p-value={p_value:.4f}")
   
   stat, p_value = kstest(male, female, alternative='greater', method='exact')
-  st.markdown(f" Kolmogorov-Smirnov Test: statistic={stat:.4f}, p-value={p_value:.4f}")
+  st.markdown("**Kolmogorov-Smirnov Test**")
+  st.markdown(f"statistic={stat:.4f}, p-value={p_value:.4f}")
   
   sample_stat = np.mean(male) - np.mean(female)
   stats = np.zeros(1000)
@@ -57,4 +59,5 @@ if uploaded_file is not None:
     labels = np.random.permutation((df['sex'] == 0).values)
     stats[k] = np.mean(df.more_2_days[labels]) - np.mean(df.more_2_days[labels==False])
   p_value = np.mean(stats > sample_stat)
-  st.markdown(f"Permutation test: p-value={p_value:.4f}")
+  st.markdown("**Permutation Test**")
+  st.markdown(f"p-value={p_value:.4f}")
