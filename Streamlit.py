@@ -28,13 +28,13 @@ def age_checker(p_value, alpha):
     st.write("Не отвергаем гипотезу о том, что частота пропусков людей разных возрастов одинаковая")  
     
 def all_tests(pridicted, observed, alpha):
-  stat, p_value = mannwhitneyu(pridicted, observed, alternative='greater', method='exact')
+  stat, p_value = mannwhitneyu(pridicted, observed, alternative='greater')
   st.write("**Mann–Whitney U Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
   sex_checker(p_value, alpha)
   st.write("##")
   
-  stat, p_value = kstest(pridicted, observed, alternative='greater', method='exact')
+  stat, p_value = kstest(pridicted, observed, alternative='greater')
   st.write("**Kolmogorov-Smirnov Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
   sex_checker(p_value, alpha)
