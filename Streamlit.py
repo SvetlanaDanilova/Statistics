@@ -80,7 +80,7 @@ def ab_test(old, new):
     #calculating the probability for Test to be better than Control
     prob=calc_prob_between(beta_T, beta_C)
 
-    st.write(f"Test option lift Conversion Rates by {lift*100:2.2f}% with {prob*100:2.1f}% probability.")
+    st.write(f"Увеличение Conversion Rate на {lift*100:2.2f}% с вероятностью {prob*100:2.1f}%.")
 
 sns.set()
 rcParams['figure.figsize'] = 10, 6
