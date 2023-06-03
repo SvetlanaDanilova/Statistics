@@ -9,6 +9,12 @@ from math import lgamma
 
 from scipy.stats import mannwhitneyu, kstest, ttest_ind, beta
 
+def checker(p_value, alpha):
+  if p_value < alpha:
+    st.write("Отвергаем гипотезу о том, что частота пропусков одинаковая")
+  else:
+    st.write("Не отвергаем гипотезу о том, что частота пропусков одинаковая")
+
 def h(a, b, c, d):
     num = lgamma(a + c) + lgamma(b + d) + lgamma(a + b) + lgamma(c + d)
     den = lgamma(a) + lgamma(b) + lgamma(c) + lgamma(d) + lgamma(a + b + c + d)
@@ -94,15 +100,13 @@ if uploaded_file is not None:
   stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
   st.write("**Mann–Whitney U Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
-  if p_value < alpha:
-    st.write("Отвергаем гипотезу о том, что частота пропусков одинаковая")
-  else:
-    st.write("Не отвергаем гипотезу о том, что частота пропусков одинаковая")
+  checker(p_value, alpha)
   st.write("##")
   
   stat, p_value = kstest(male, female, alternative='greater', method='exact')
   st.write("**Kolmogorov-Smirnov Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
+  checker(p_value, alpha)
   st.write("##")
     
   sample_stat = np.mean(male) - np.mean(female)
@@ -113,6 +117,7 @@ if uploaded_file is not None:
   p_value = np.mean(stats > sample_stat)
   st.write("**Permutation Test**")
   st.write(f"p-value = {p_value:.4f}")
+  checker(p_value, alpha)
   st.write("##")
 
   st.write("**A/B Test**")
