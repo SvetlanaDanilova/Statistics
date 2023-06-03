@@ -25,9 +25,6 @@ if uploaded_file is not None:
   female = df[df['sex'] == 1]['work_days']
 
   st.markdown('Гипотеза 1: Мужчины пропускают в течение года более n рабочих дней по болезни значимо чаще женщин')
-  
-  number_of_days = np.max(df['work_days'])
-  days = st.slider('Задайте количество дней n в гипотезе', 0, 10, 10)
 
   fig = plt.figure(figsize=(15, 10))
   plt.title('Histogram Density Function')
@@ -39,7 +36,11 @@ if uploaded_file is not None:
 
   st.pyplot(fig)
   
-  df['more_2_days'] = np.where(df['work_days'] > days, 1, 0)
+  number_of_days = np.max(df['work_days'])
+  st.write(number_of_days)
+  days = st.slider('Задайте количество дней n в гипотезе', 0, 10, 10)
+  
+  df['more_n_days'] = np.where(df['work_days'] > days, 1, 0)
 
   male = df[df['sex'] == 0]['more_n_days']
   female = df[df['sex'] == 1]['more_n_days']
