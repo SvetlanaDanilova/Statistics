@@ -8,7 +8,7 @@ uploaded_file = st.file_uploader('Выберите файл для анализ�
 
 if uploaded_file is not None:
   df = pd.read_csv(uploaded_file, sep=',', encoding='cp1251')
-  st.write(dataframe)
+  st.write(df)
 
 df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
 df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
