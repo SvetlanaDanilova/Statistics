@@ -89,7 +89,7 @@ if uploaded_file is not None:
   st.write(f"женщин : {sum(female) / len(female):.4f}")
   st.write("##")
     
-  alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0, 0.2, 20)
+  alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 20)
   
   stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
   st.write("**Mann–Whitney U Test**")
