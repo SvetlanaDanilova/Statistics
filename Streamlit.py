@@ -141,6 +141,9 @@ if uploaded_file is not None:
   plt.show()
   st.pyplot(fig2)
   
+  old = df[df['age'] > 35]['more_n_days']
+  young = df[df['age'] <= 35]['more_n_days']
+  
   st.write("**Частота пропуска для**")
   st.write(f"более взрослых людей : {sum(old) / len(old):.4f}")
   st.write(f"менее взрослых людей : {sum(young) / len(young):.4f}")
