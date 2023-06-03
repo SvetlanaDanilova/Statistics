@@ -15,29 +15,26 @@ def load_data(uploaded_file):
   df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
   return df
 
-def sex_checker(p_value, alpha):
+def checker(p_value, alpha, type):
   if p_value < alpha:
-    st.write("Принимаем альтернативную гипотезу о том, что мужчины пропускают рабочие дни чаще")
+    if type == 'sex':
+      st.write("Принимаем альтернативную гипотезу о том, что мужчины пропускают рабочие дни чаще")
+    if type == 'age':
+      st.write("Принимаем альтернативную гипотезу о том, что люди постарше пропускают рабочие дни чаще")
   else:
     st.write("Не отвергаем гипотезу о том, что частота пропусков мужчин и женщин одинаковая")
     
-def age_checker(p_value, alpha):
-  if p_value < alpha:
-    st.write("Принимаем альтернативную гипотезу о том, что люди постарше пропускают рабочие дни чаще")
-  else:
-    st.write("Не отвергаем гипотезу о том, что частота пропусков людей разных возрастов одинаковая")  
-    
-def all_tests(pridicted, observed, alpha):
+def all_tests(pridicted, observed, alpha, type):
   stat, p_value = mannwhitneyu(pridicted, observed, alternative='greater')
   st.write("**Mann–Whitney U Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
-  sex_checker(p_value, alpha)
+  checker(p_value, alpha, type)
   st.write("##")
   
   stat, p_value = kstest(pridicted, observed, alternative='greater')
   st.write("**Kolmogorov-Smirnov Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
-  sex_checker(p_value, alpha)
+  checker(p_value, alpha, type)
   st.write("##")
 
   st.write("**A/B Test**")
@@ -120,7 +117,7 @@ if uploaded_file is not None:
   st.write("##")
     
   s_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 1', 0.0, 0.2, 0.05)
-  all_tests(male, female, s_alpha)
+  all_tests(male, female, s_alpha, 'sex')
   
   
   st.markdown('Гипотеза 2: Работники старше m лет пропускают в течение года более n рабочих дней по болезни значимо чаще своих более молодых коллег.')
@@ -150,4 +147,4 @@ if uploaded_file is not None:
   st.write("##")
   
   a_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 2', 0.0, 0.2, 0.05)
-  all_tests(old, young, a_alpha)
+  all_tests(old, young, a_alpha, 'age')
