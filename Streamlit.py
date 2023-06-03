@@ -16,13 +16,16 @@ def load_data(uploaded_file):
   return df
 
 def checker(p_value, alpha, type):
-  if p_value < alpha:
-    if type == 'sex':
+  if type == 'sex':
+    if p_value < alpha:
       st.write("Принимаем альтернативную гипотезу о том, что мужчины пропускают рабочие дни чаще")
-    if type == 'age':
+    else:
+      st.write("Не отвергаем гипотезу о том, что частота пропусков мужчин и женщин одинаковая")
+  if type == 'age':
+    if p_value < alpha:
       st.write("Принимаем альтернативную гипотезу о том, что люди постарше пропускают рабочие дни чаще")
-  else:
-    st.write("Не отвергаем гипотезу о том, что частота пропусков мужчин и женщин одинаковая")
+    else:
+      st.write("Не отвергаем гипотезу о том, что частота пропусков людей разных возрастов одинаковая")
     
 def all_tests(pridicted, observed, alpha, type):
   stat, p_value = mannwhitneyu(pridicted, observed, alternative='greater')
