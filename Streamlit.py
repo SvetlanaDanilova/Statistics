@@ -140,6 +140,7 @@ if uploaded_file is not None:
   plt.ylabel('Density')
   plt.legend()
   plt.show()
+  st.pyplot(fig)
   
   st.write("**Частота пропуска для**")
   st.write(f"более взрослых людей : {sum(old) / len(old):.4f}")
