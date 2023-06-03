@@ -41,8 +41,9 @@ if uploaded_file is not None:
   male = df[df['sex'] == 0]['more_2_days']
   female = df[df['sex'] == 1]['more_2_days']
   
-  st.markdown(f" Частота пропуска больше двух дней у мужчин = {sum(male) / len(male):.4f}")
-  st.markdown(f" Частота пропуска больше двух дней у женщин = {sum(female) / len(female):.4f}")
+  st.markdown("**Частота пропуска больше двух дней для**")
+  st.markdown(f"                                        мужчин = {sum(male) / len(male):.4f}")
+  st.markdown(f"                                        женщин = {sum(female) / len(female):.4f}")
   
   stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
   st.markdown(f" Mann–Whitney U Test: statistic={stat:.4f}, p-value={p_value:.4f}")
