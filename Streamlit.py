@@ -88,10 +88,16 @@ if uploaded_file is not None:
   st.write(f"мужчин : {sum(male) / len(male):.4f}")
   st.write(f"женщин : {sum(female) / len(female):.4f}")
   st.write("##")
+    
+  alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0, 0.2, 20)
   
   stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
   st.write("**Mann–Whitney U Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
+  if p-value < alpha:
+    st.write("Отвергаем гипотезу о том, что частота пропусков одинаковая")
+  else:
+    st.write("Не отвергаем гипотезу о том, что частота пропусков одинаковая")
   st.write("##")
   
   stat, p_value = kstest(male, female, alternative='greater', method='exact')
