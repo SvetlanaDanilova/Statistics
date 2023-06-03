@@ -27,7 +27,7 @@ if uploaded_file is not None:
   st.markdown('Гипотеза 1: Мужчины пропускают в течение года более n рабочих дней по болезни значимо чаще женщин')
   
   number_of_days = np.max(df['work_days'])
-  days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days, number_of_days)
+    days = st.slider('Задайте количество дней n в гипотезе', 0, 10, 10)
 
   fig = plt.figure(figsize=(15, 10))
   plt.title('Histogram Density Function')
