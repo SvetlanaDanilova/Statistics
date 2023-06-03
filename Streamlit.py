@@ -9,6 +9,12 @@ from math import lgamma
 
 from scipy.stats import mannwhitneyu, kstest, ttest_ind, beta
 
+def load_data(uploaded_file):
+  df = pd.read_csv(uploaded_file, sep=',', encoding='cp1251')
+  df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
+  df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
+  return df
+
 def sex_checker(p_value, alpha):
   if p_value < alpha:
     st.write("Принимаем альтернативную гипотезу о том, что мужчины пропускают рабочие дни чаще")
@@ -19,7 +25,24 @@ def age_checker(p_value, alpha):
   if p_value < alpha:
     st.write("Принимаем альтернативную гипотезу о том, что люди постарше пропускают рабочие дни чаще")
   else:
-    st.write("Не отвергаем гипотезу о том, что частота пропусков людей разных возрастов одинаковая")
+    st.write("Не отвергаем гипотезу о том, что частота пропусков людей разных возрастов одинаковая")  
+    
+def all_tests(pridicted, observed):
+  stat, p_value = mannwhitneyu(pridicted, observed, alternative='greater', method='exact')
+  st.write("**Mann–Whitney U Test**")
+  st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
+  sex_checker(p_value, alpha)
+  st.write("##")
+  
+  stat, p_value = kstest(pridicted, observed, alternative='greater', method='exact')
+  st.write("**Kolmogorov-Smirnov Test**")
+  st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
+  sex_checker(p_value, alpha)
+  st.write("##")
+
+  st.write("**A/B Test**")
+  ab_test(observed, pridicted)
+  st.write("##")
 
 def h(a, b, c, d):
     num = lgamma(a + c) + lgamma(b + d) + lgamma(a + b) + lgamma(c + d)
@@ -58,7 +81,6 @@ def ab_test(old, new):
     prob=calc_prob_between(beta_T, beta_C)
 
     st.write(f"Test option lift Conversion Rates by {lift*100:2.2f}% with {prob*100:2.1f}% probability.")
-    st.write("##")
 
 sns.set()
 rcParams['figure.figsize'] = 10, 6
@@ -69,9 +91,7 @@ st.title('Проверка гипотез о частоте пропуска б�
 uploaded_file = st.file_uploader('Выберите файл для анализа данных с расширением csv')
 
 if uploaded_file is not None:
-  df = pd.read_csv(uploaded_file, sep=',', encoding='cp1251')
-  df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
-  df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
+  df = load_data(uploaded_file)
 
   male = df[df['sex'] == 0]['work_days']
   female = df[df['sex'] == 1]['work_days']
