@@ -24,7 +24,10 @@ if uploaded_file is not None:
   male = df[df['sex'] == 0]['work_days']
   female = df[df['sex'] == 1]['work_days']
 
-  st.markdown('Гипотеза 1: Мужчины пропускают в течение года более 2 рабочих дней по болезни значимо чаще женщин')
+  st.markdown('Гипотеза 1: Мужчины пропускают в течение года более n рабочих дней по болезни значимо чаще женщин')
+  
+  number_of_days = np.max(df['work_days'])
+  days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days, number_of_days)
 
   fig = plt.figure(figsize=(15, 10))
   plt.title('Histogram Density Function')
@@ -36,12 +39,12 @@ if uploaded_file is not None:
 
   st.pyplot(fig)
   
-  df['more_2_days'] = np.where(df['work_days'] > 2, 1, 0)
+  df['more_2_days'] = np.where(df['work_days'] > days, 1, 0)
 
-  male = df[df['sex'] == 0]['more_2_days']
-  female = df[df['sex'] == 1]['more_2_days']
+  male = df[df['sex'] == 0]['more_n_days']
+  female = df[df['sex'] == 1]['more_n_days']
   
-  st.write("**Частота пропуска больше двух дней для**")
+  st.write("**Частота пропуска для**")
   st.write(f"мужчин : {sum(male) / len(male):.4f}")
   st.write(f"женщин : {sum(female) / len(female):.4f}")
   st.write("##")
@@ -60,7 +63,7 @@ if uploaded_file is not None:
   stats = np.zeros(1000)
   for k in range(1000):
     labels = np.random.permutation((df['sex'] == 0).values)
-    stats[k] = np.mean(df.more_2_days[labels]) - np.mean(df.more_2_days[labels==False])
+    stats[k] = np.mean(df.more_n_days[labels]) - np.mean(df.more_n_days[labels==False])
   p_value = np.mean(stats > sample_stat)
   st.write("**Permutation Test**")
   st.write(f"p-value = {p_value:.4f}")
