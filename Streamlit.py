@@ -129,7 +129,8 @@ if uploaded_file is not None:
   df['more_n_days'] = np.where(df['work_days'] > a_days, 1, 0)
   
   max_age = max(df['age'])
-  age = st.slider('Задайте граничное количество лет m в гипотезе 2', 0, max_age-1, 35)
+  min_age = min(df['age'])
+  age = st.slider('Задайте граничное количество лет m в гипотезе 2', min_age+1, max_age-1, 35)
   old = df[df['age'] > age]['work_days']
   young = df[df['age'] <= age]['work_days']
   
