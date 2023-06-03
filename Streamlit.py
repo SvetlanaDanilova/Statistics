@@ -27,7 +27,7 @@ def age_checker(p_value, alpha):
   else:
     st.write("Не отвергаем гипотезу о том, что частота пропусков людей разных возрастов одинаковая")  
     
-def all_tests(pridicted, observed):
+def all_tests(pridicted, observed, alpha):
   stat, p_value = mannwhitneyu(pridicted, observed, alternative='greater', method='exact')
   st.write("**Mann–Whitney U Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
@@ -123,28 +123,4 @@ if uploaded_file is not None:
     
   alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 0.05)
   
-  stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
-  st.write("**Mann–Whitney U Test**")
-  st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
-  sex_checker(p_value, alpha)
-  st.write("##")
-  
-  stat, p_value = kstest(male, female, alternative='greater', method='exact')
-  st.write("**Kolmogorov-Smirnov Test**")
-  st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
-  sex_checker(p_value, alpha)
-  st.write("##")
-    
-  sample_stat = np.mean(male) - np.mean(female)
-  stats = np.zeros(1000)
-  for k in range(1000):
-    labels = np.random.permutation((df['sex'] == 0).values)
-    stats[k] = np.mean(df.more_n_days[labels]) - np.mean(df.more_n_days[labels==False])
-  p_value = np.mean(stats > sample_stat)
-  st.write("**Permutation Test**")
-  st.write(f"p-value = {p_value:.4f}")
-  sex_checker(p_value, alpha)
-  st.write("##")
-
-  st.write("**A/B Test**")
-  ab_test(female, male)
+  all_tests(male, female, alpha)
