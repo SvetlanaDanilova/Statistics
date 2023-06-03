@@ -105,7 +105,8 @@ if uploaded_file is not None:
     labels = np.random.permutation((df['sex'] == 0).values)
     stats[k] = np.mean(df.more_n_days[labels]) - np.mean(df.more_n_days[labels==False])
   p_value = np.mean(stats > sample_stat)
-  st.write(f"Permutation Test: p-value={p_value:.4f}")
+  st.write("**Permutation Test**")
+  st.write(f"p-value = {p_value:.4f}")
   st.write("##")
 
   st.write("**A/B Test**")
