@@ -77,7 +77,7 @@ if uploaded_file is not None:
   st.pyplot(fig)
   
   number_of_days = max(df['work_days'])
-  days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days, number_of_days)
+  days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days-1, number_of_days-1)
   
   df['more_n_days'] = np.where(df['work_days'] > days, 1, 0)
 
