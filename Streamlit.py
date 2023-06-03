@@ -10,7 +10,7 @@ from scipy.stats import mannwhitneyu, kstest, ttest_ind, beta
 
 sns.set()
 rcParams['figure.figsize'] = 10, 6
-config InlineBackend.figure_format = 'svg'
+#config InlineBackend.figure_format = 'svg'
 np.random.seed(42)
 
 st.title('Проверка гипотез о частоте пропуска более 2 рабочих дней')
