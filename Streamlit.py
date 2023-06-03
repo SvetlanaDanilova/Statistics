@@ -108,7 +108,7 @@ if uploaded_file is not None:
   st.pyplot(fig)
   
   number_of_days = max(df['work_days'])
-  s_days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days-1, 2)
+  s_days = st.slider('Задайте количество дней n в гипотезе 1', 0, number_of_days-1, 2)
   df['more_n_days'] = np.where(df['work_days'] > s_days, 1, 0)
 
   male = df[df['sex'] == 0]['more_n_days']
@@ -119,7 +119,7 @@ if uploaded_file is not None:
   st.write(f"женщин : {sum(female) / len(female):.4f}")
   st.write("##")
     
-  s_alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 0.05)
+  s_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 1', 0.0, 0.2, 0.05)
   all_tests(male, female, s_alpha)
   
   
@@ -129,7 +129,7 @@ if uploaded_file is not None:
   df['more_n_days'] = np.where(df['work_days'] > a_days, 1, 0)
   
   max_age = max(df['age'])
-  age = st.slider('Задайте граничное количество лет m в гипотезе', 0, max_age-1, 35)
+  age = st.slider('Задайте граничное количество лет m в гипотезе 2', 0, max_age-1, 35)
   old = df[df['age'] > age]['work_days']
   young = df[df['age'] <= age]['work_days']
   
@@ -146,5 +146,5 @@ if uploaded_file is not None:
   st.write(f"менее взрослых людей : {sum(young) / len(young):.4f}")
   st.write("##")
   
-  a_alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 0.05)
+  a_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 2', 0.0, 0.2, 0.05)
   all_tests(old, young, a_alpha)
