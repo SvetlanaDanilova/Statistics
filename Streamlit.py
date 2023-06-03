@@ -99,4 +99,5 @@ if uploaded_file is not None:
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
   st.write("##")
 
+  st.write("**A/B Test**")
   ab_test(female, male)
