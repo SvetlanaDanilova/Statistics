@@ -3,28 +3,58 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib import rcParams
+
+from scipy.stats import mannwhitneyu, kstest, ttest_ind, beta
+
+sns.set()
+rcParams['figure.figsize'] = 10, 6
+%config InlineBackend.figure_format = 'svg'
+np.random.seed(42)
+
+st.title('Проверка гипотез о частоте пропуска более 2 рабочих дней')
 
 uploaded_file = st.file_uploader('Выберите файл для анализа данных с расширением csv')
 
 if uploaded_file is not None:
   df = pd.read_csv(uploaded_file, sep=',', encoding='cp1251')
-  st.write(df)
+  df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
+  df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
 
-df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
-df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
+  male = df[df['sex'] == 0]['work_days']
+  female = df[df['sex'] == 1]['work_days']
 
-male = df[df['sex'] == 0]['work_days']
-female = df[df['sex'] == 1]['work_days']
+  st.markdown('Гипотеза 1: Мужчины пропускают в течение года более 2 рабочих дней по болезни значимо чаще женщин')
 
-st.title('Проверка гипотез')
-st.markdown('Гипотеза 1: Мужчины пропускают в течение года более 2 рабочих дней по болезни значимо чаще женщин')
+  fig = plt.figure(figsize=(15, 10))
+  plt.title('Histogram Density Function')
+  plt.hist(male, density=True, alpha=0.5, label='Sex = М', bins=9)
+  plt.hist(female, density=True, alpha=0.5, label='Sex = Ж', bins=9)
+  plt.xlabel('work_days')
+  plt.ylabel('Density')
+  plt.legend()
 
-fig = plt.figure(figsize=(15, 10))
-plt.title('Histogram Density Function')
-plt.hist(male, density=True, alpha=0.5, label='Sex = М', bins=9)
-plt.hist(female, density=True, alpha=0.5, label='Sex = Ж', bins=9)
-plt.xlabel('work_days')
-plt.ylabel('Density')
-plt.legend()
+  st.pyplot(fig)
+  
+  df['more_2_days'] = np.where(df['work_days'] > 2, 1, 0)
 
-st.pyplot(fig)
+  male = df[df['sex'] == 0]['more_2_days']
+  female = df[df['sex'] == 1]['more_2_days']
+  
+  print(f" Частота пропуска больше двух дней у мужчин {sum(male) / len(male):.4f}")
+  print(f" Частота пропуска больше двух дней у женщин {sum(female) / len(female):.4f}")
+  
+  stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
+  print(f" Mann–Whitney U Test: statistic={stat:.4f}, p-value={p_value:.4f}")
+  
+  stat, p_value = kstest(male, female, alternative='greater', method='exact')
+  print(f" Kolmogorov-Smirnov Test: statistic={stat:.4f}, p-value={p_value:.4f}")
+  
+  sample_stat = np.mean(male) - np.mean(female)
+  stats = np.zeros(1000)
+  for k in range(1000):
+    labels = np.random.permutation((df['sex'] == 0).values)
+    stats[k] = np.mean(df.more_2_days[labels]) - np.mean(df.more_2_days[labels==False])
+  p_value = np.mean(stats > sample_stat)
+  print(f"Permutation test: p-value={p_value:.4f}")
