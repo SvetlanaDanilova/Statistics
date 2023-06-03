@@ -98,6 +98,15 @@ if uploaded_file is not None:
   st.write("**Kolmogorov-Smirnov Test**")
   st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
   st.write("##")
+    
+  sample_stat = np.mean(male) - np.mean(female)
+  stats = np.zeros(1000)
+  for k in range(1000):
+    labels = np.random.permutation((df['sex'] == 0).values)
+    stats[k] = np.mean(df.more_n_days[labels]) - np.mean(df.more_n_days[labels==False])
+  p_value = np.mean(stats > sample_stat)
+  st.write(f"Permutation Test: p-value={p_value:.4f}")
+  st.write("##")
 
   st.write("**A/B Test**")
   ab_test(female, male)
