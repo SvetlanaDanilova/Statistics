@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 uploaded_file = st.file_uploader('Выберите файл для анализа данных с расширением csv')
 
 if uploaded_file is not None:
-  df = pd.read_csv(uploaded_file)
+  df = pd.read_csv(uploaded_file, sep=',', encoding='cp1251')
   st.write(dataframe)
 
 df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
