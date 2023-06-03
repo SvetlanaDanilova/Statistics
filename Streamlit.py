@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 
 import streamlit as st
-from scipy.stats import mannwhitneyu, kstest, ttest_ind, beta
 
 df = pd.read_csv('data.csv', sep=',', encoding='cp1251')  
 df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
