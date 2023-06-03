@@ -23,6 +23,5 @@ plt.hist(female, density=True, alpha=0.5, label='Sex = Ж', bins=9)
 plt.xlabel('work_days')
 plt.ylabel('Density')
 plt.legend()
-plt.show()
 
-st.plotly_chart(fig, use_container_width=True)
+st.pyplot(fig)
