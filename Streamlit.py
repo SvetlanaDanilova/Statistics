@@ -77,7 +77,7 @@ if uploaded_file is not None:
   st.pyplot(fig)
   
   number_of_days = max(df['work_days'])
-  days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days-1, number_of_days-1)
+  days = st.slider('Задайте количество дней n в гипотезе', 0, number_of_days-1, 2)
   
   df['more_n_days'] = np.where(df['work_days'] > days, 1, 0)
 
@@ -89,7 +89,7 @@ if uploaded_file is not None:
   st.write(f"женщин : {sum(female) / len(female):.4f}")
   st.write("##")
     
-  alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 20)
+  alpha = st.slider('Задайте уровень значимости для проверки гипотозы', 0.0, 0.2, 0.05)
   
   stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
   st.write("**Mann–Whitney U Test**")
