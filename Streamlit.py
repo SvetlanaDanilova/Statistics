@@ -44,14 +44,17 @@ if uploaded_file is not None:
   st.write("**Частота пропуска больше двух дней для**")
   st.write(f"мужчин : {sum(male) / len(male):.4f}")
   st.write(f"женщин : {sum(female) / len(female):.4f}")
+  st.write("##")
   
   stat, p_value = mannwhitneyu(male, female, alternative='greater', method='exact')
-  st.markdown("**Mann–Whitney U Test**")
-  st.markdown(f"statistic={stat:.4f}, p-value={p_value:.4f}")
+  st.write("**Mann–Whitney U Test**")
+  st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
+  st.write("##")
   
   stat, p_value = kstest(male, female, alternative='greater', method='exact')
   st.write("**Kolmogorov-Smirnov Test**")
-  st.write(f"statistic={stat:.4f}, p-value={p_value:.4f}")
+  st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
+  st.write("##")
   
   sample_stat = np.mean(male) - np.mean(female)
   stats = np.zeros(1000)
@@ -60,4 +63,5 @@ if uploaded_file is not None:
     stats[k] = np.mean(df.more_2_days[labels]) - np.mean(df.more_2_days[labels==False])
   p_value = np.mean(stats > sample_stat)
   st.write("**Permutation Test**")
-  st.write(f"p-value={p_value:.4f}")
+  st.write(f"p-value = {p_value:.4f}")
+  st.write("##")
