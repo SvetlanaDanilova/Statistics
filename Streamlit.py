@@ -10,39 +10,54 @@ from math import lgamma
 from scipy.stats import mannwhitneyu, kstest, ttest_ind, beta
 
 def load_data(uploaded_file):
-  df = pd.read_csv(uploaded_file, sep=',', encoding='cp1251')
-  df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
-  df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
-  return df
+    df = pd.read_csv(uploaded_file, sep=',', encoding='cp1251')
+    df.rename(columns={'Количество больничных дней': 'work_days', 'Возраст': 'age', 'Пол' : 'sex'}, inplace=True)
+    df['sex'].replace(['М', 'Ж'], [0, 1], inplace=True)
+    return df
 
-def checker(p_value, alpha, type):
-  if type == 'sex':
+def checker(p_value, alpha):
     if p_value < alpha:
-      st.write("Принимаем альтернативную гипотезу о том, что мужчины пропускают рабочие дни чаще")
+        return False
     else:
-      st.write("Не отвергаем гипотезу о том, что частота пропусков мужчин и женщин одинаковая")
-  if type == 'age':
-    if p_value < alpha:
-      st.write("Принимаем альтернативную гипотезу о том, что люди постарше пропускают рабочие дни чаще")
-    else:
-      st.write("Не отвергаем гипотезу о том, что частота пропусков людей разных возрастов одинаковая")
-    
+        return True
+
+def print_answer(answer, type):
+    if type == 'sex':
+        if answer:
+            st.write("Не отвергаем гипотезу о том, что частота пропусков мужчин и женщин одинаковая")
+        else:
+            st.write("Принимаем альтернативную гипотезу о том, что мужчины пропускают рабочие дни чаще")
+    if type == 'age':
+        if answer:
+            st.write("Не отвергаем гипотезу о том, что частота пропусков людей разных возрастов одинаковая")
+        else:
+            st.write("Принимаем альтернативную гипотезу о том, что люди постарше пропускают рабочие дни чаще")       
+
+def draw_hist(array1, label1, array2, label2):
+    fig = plt.figure(figsize=(15, 10))
+    plt.title('Histogram Density Function')
+    plt.hist(array1, density=True, alpha=0.5, label=label1, bins=9)
+    plt.hist(array2, density=True, alpha=0.5, label=label2, bins=9)
+    plt.xlabel('work_days')
+    plt.ylabel('Density')
+    plt.legend()
+    return fig
+
+def do_test(test, test_name, pridicted, observed, alpha, type):
+    stat, p_value = test(pridicted, observed, alternative='greater')
+    st.write(f"**{test_name}**")
+    st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
+    check = checker(p_value, alpha)
+    print_answer(check, type)
+    st.write("##")
+        
 def all_tests(pridicted, observed, alpha, type):
-  stat, p_value = mannwhitneyu(pridicted, observed, alternative='greater')
-  st.write("**Mann–Whitney U Test**")
-  st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
-  checker(p_value, alpha, type)
-  st.write("##")
-  
-  stat, p_value = kstest(pridicted, observed, alternative='greater')
-  st.write("**Kolmogorov-Smirnov Test**")
-  st.write(f"statistic = {stat:.4f}, p-value = {p_value:.4f}")
-  checker(p_value, alpha, type)
-  st.write("##")
+    
+    do_test(mannwhitneyu, 'Mann–Whitney U Test', pridicted, observed, alpha, type)
 
-  st.write("**A/B Test**")
-  ab_test(observed, pridicted)
-  st.write("##")
+    do_test(kstest, 'Kolmogorov-Smirnov Test', pridicted, observed, alpha, type)
+
+    ab_test(observed, pridicted)
 
 def h(a, b, c, d):
     num = lgamma(a + c) + lgamma(b + d) + lgamma(a + b) + lgamma(c + d)
@@ -80,77 +95,72 @@ def ab_test(old, new):
     #calculating the probability for Test to be better than Control
     prob=calc_prob_between(beta_T, beta_C)
 
+    st.write("**A/B Test**")
     st.write(f"Увеличение Conversion Rate на {lift*100:2.2f}% с вероятностью {prob*100:2.1f}%.")
+    st.write("##")
 
-sns.set()
-rcParams['figure.figsize'] = 10, 6
-np.random.seed(42)
+def main():
 
-st.title('Проверка гипотез о частоте пропуска более 2 рабочих дней')
+  sns.set()
+  rcParams['figure.figsize'] = 10, 6
+  np.random.seed(42)
 
-uploaded_file = st.file_uploader('Выберите файл для анализа данных с расширением csv')
+  st.title('Проверка гипотез о частоте пропуска более 2 рабочих дней')
 
-if uploaded_file is not None:
-  df = load_data(uploaded_file)
+  uploaded_file = st.file_uploader('Выберите файл для анализа данных с расширением csv')
 
-  male = df[df['sex'] == 0]['work_days']
-  female = df[df['sex'] == 1]['work_days']
+  if uploaded_file is not None:
 
-  st.markdown('Гипотеза 1: Мужчины пропускают в течение года более n рабочих дней по болезни значимо чаще женщин.')
+    df = load_data(uploaded_file)
 
-  fig1 = plt.figure(figsize=(15, 10))
-  plt.title('Histogram Density Function')
-  plt.hist(male, density=True, alpha=0.5, label='Sex = М', bins=9)
-  plt.hist(female, density=True, alpha=0.5, label='Sex = Ж', bins=9)
-  plt.xlabel('work_days')
-  plt.ylabel('Density')
-  plt.legend()
-  st.pyplot(fig1)
-  
-  number_of_days = max(df['work_days'])
-  s_days = st.slider('Задайте количество дней n в гипотезе 1', 0, number_of_days-1, 2)
-  df['more_n_days'] = np.where(df['work_days'] > s_days, 1, 0)
+    male = df[df['sex'] == 0]['work_days']
+    female = df[df['sex'] == 1]['work_days']
 
-  male = df[df['sex'] == 0]['more_n_days']
-  female = df[df['sex'] == 1]['more_n_days']
-  
-  st.write("**Частота пропуска для**")
-  st.write(f"мужчин : {sum(male) / len(male):.4f}")
-  st.write(f"женщин : {sum(female) / len(female):.4f}")
-  st.write("##")
+    st.markdown('Гипотеза 1: Мужчины пропускают в течение года более n рабочих дней по болезни значимо чаще женщин.')
+
+    fig1 = draw_hist(male, 'Sex = М', female, 'Sex = Ж')
+    st.pyplot(fig1)
     
-  s_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 1', 0.0, 0.2, 0.05)
-  all_tests(male, female, s_alpha, 'sex')
-  
-  
-  st.markdown('Гипотеза 2: Работники старше m лет пропускают в течение года более n рабочих дней по болезни значимо чаще своих более молодых коллег.')
-  
-  a_days = st.slider('Задайте количество дней n в гипотезе 2', 0, number_of_days-1, 2)
-  df['more_n_days'] = np.where(df['work_days'] > a_days, 1, 0)
-  
-  max_age = max(df['age'])
-  min_age = min(df['age'])
-  age = st.slider('Задайте граничное количество лет m в гипотезе 2', min_age+1, max_age-1, 35)
-  old = df[df['age'] > age]['work_days']
-  young = df[df['age'] <= age]['work_days']
-  
-  fig2 = plt.figure(figsize=(15, 10))
-  plt.title('Histogram Density Function')
-  plt.hist(old, density=True, alpha=0.5, label='age > ' + str(age), bins=9)
-  plt.hist(young, density=True, alpha=0.5, label='age <= ' + str(age), bins=9)
-  plt.xlabel('work_days')
-  plt.ylabel('Density')
-  plt.legend()
-  plt.show()
-  st.pyplot(fig2)
-  
-  old = df[df['age'] > 35]['more_n_days']
-  young = df[df['age'] <= 35]['more_n_days']
-  
-  st.write("**Частота пропуска для**")
-  st.write(f"более взрослых людей : {sum(old) / len(old):.4f}")
-  st.write(f"менее взрослых людей : {sum(young) / len(young):.4f}")
-  st.write("##")
-  
-  a_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 2', 0.0, 0.2, 0.05)
-  all_tests(old, young, a_alpha, 'age')
+    number_of_days = max(df['work_days'])
+    s_days = st.slider('Задайте количество дней n в гипотезе 1', 0, number_of_days-1, 2)
+    df['more_n_days'] = np.where(df['work_days'] > s_days, 1, 0)
+
+    male = df[df['sex'] == 0]['more_n_days']
+    female = df[df['sex'] == 1]['more_n_days']
+    
+    st.write("**Частота пропуска для**")
+    st.write(f"мужчин : {sum(male) / len(male):.4f}")
+    st.write(f"женщин : {sum(female) / len(female):.4f}")
+    st.write("##")
+      
+    s_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 1', 0.0, 0.2, 0.05)
+    all_tests(male, female, s_alpha, 'sex')
+    
+    
+    st.markdown('Гипотеза 2: Работники старше m лет пропускают в течение года более n рабочих дней по болезни значимо чаще своих более молодых коллег.')
+    
+    a_days = st.slider('Задайте количество дней n в гипотезе 2', 0, number_of_days-1, 2)
+    df['more_n_days'] = np.where(df['work_days'] > a_days, 1, 0)
+    
+    max_age = max(df['age'])
+    min_age = min(df['age'])
+    age = st.slider('Задайте граничное количество лет m в гипотезе 2', min_age+1, max_age-1, 35)
+    old = df[df['age'] > age]['work_days']
+    young = df[df['age'] <= age]['work_days']
+    
+    fig2 = draw_hist(old, 'age > ' + str(age), young, 'age > ' + str(age))
+    st.pyplot(fig2)
+    
+    old = df[df['age'] > 35]['more_n_days']
+    young = df[df['age'] <= 35]['more_n_days']
+    
+    st.write("**Частота пропуска для**")
+    st.write(f"более взрослых людей : {sum(old) / len(old):.4f}")
+    st.write(f"менее взрослых людей : {sum(young) / len(young):.4f}")
+    st.write("##")
+    
+    a_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 2', 0.0, 0.2, 0.05)
+    all_tests(old, young, a_alpha, 'age')
+
+if __name__ == "__main__":
+    main()
