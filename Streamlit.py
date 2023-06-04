@@ -36,12 +36,18 @@ def print_answer(answer, type):
 def draw_hist(array1, label1, array2, label2):
     fig = plt.figure(figsize=(15, 10))
     plt.title('Histogram Density Function')
-    plt.hist(array1, density=True, alpha=0.5, label=label1, bins=9)
-    plt.hist(array2, density=True, alpha=0.5, label=label2, bins=9)
+    plt.hist(array1, density=True, alpha=0.5, label=label1)
+    plt.hist(array2, density=True, alpha=0.5, label=label2)
     plt.xlabel('work_days')
     plt.ylabel('Density')
     plt.legend()
     return fig
+
+def print_frequency(array1, label1, array2, label2):
+    st.write("**Частота пропуска для**")
+    st.write(f"{label1} : {sum(array1) / len(array1):.4f}")
+    st.write(f"{label2} : {sum(array2) / len(array2):.4f}")
+    st.write("##")
 
 def do_test(test, test_name, pridicted, observed, alpha, type):
     stat, p_value = test(pridicted, observed, alternative='greater')
@@ -127,11 +133,8 @@ def main():
 
     male = df[df['sex'] == 0]['more_n_days']
     female = df[df['sex'] == 1]['more_n_days']
-    
-    st.write("**Частота пропуска для**")
-    st.write(f"мужчин : {sum(male) / len(male):.4f}")
-    st.write(f"женщин : {sum(female) / len(female):.4f}")
-    st.write("##")
+
+    print_frequency(male, 'мужчин', female, 'женщин')
       
     s_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 1', 0.0, 0.2, 0.05)
     all_tests(male, female, s_alpha, 'sex')
@@ -144,7 +147,8 @@ def main():
     
     max_age = max(df['age'])
     min_age = min(df['age'])
-    age = st.slider('Задайте граничное количество лет m в гипотезе 2', min_age+1, max_age-1, 35)
+    age = st.slider('Задайте граничное количество лет m в гипотезе 2', min_age, max_age-1, 35)
+
     old = df[df['age'] > age]['work_days']
     young = df[df['age'] <= age]['work_days']
     
@@ -153,11 +157,8 @@ def main():
     
     old = df[df['age'] > 35]['more_n_days']
     young = df[df['age'] <= 35]['more_n_days']
-    
-    st.write("**Частота пропуска для**")
-    st.write(f"более взрослых людей : {sum(old) / len(old):.4f}")
-    st.write(f"менее взрослых людей : {sum(young) / len(young):.4f}")
-    st.write("##")
+
+    print_frequency(old, 'более взрослых людей', young, 'менее взрослых людей')
     
     a_alpha = st.slider('Задайте уровень значимости для проверки гипотозы 2', 0.0, 0.2, 0.05)
     all_tests(old, young, a_alpha, 'age')
