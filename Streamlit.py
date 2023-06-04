@@ -37,7 +37,7 @@ def draw_hist(array1, label1, array2, label2):
     bin_size = 1
     min_edge = 0
     max_edge = 8
-    N = (max_edge - min_edge) / bin_size
+    N = int((max_edge - min_edge) / bin_size)
     Nplus1 = N + 1
     bin_list = np.linspace(min_edge, max_edge, Nplus1)
 
