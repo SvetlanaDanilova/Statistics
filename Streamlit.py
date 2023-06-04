@@ -162,8 +162,8 @@ def main():
     fig2 = draw_hist(old, 'age > ' + str(age), young, 'age <= ' + str(age))
     st.pyplot(fig2)
     
-    old = df[df['age'] > 35]['more_n_days']
-    young = df[df['age'] <= 35]['more_n_days']
+    old = df[df['age'] > age]['more_n_days']
+    young = df[df['age'] <= age]['more_n_days']
 
     print_frequency(old, 'более взрослых людей', young, 'менее взрослых людей')
     
