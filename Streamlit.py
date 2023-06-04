@@ -159,7 +159,7 @@ def main():
     old = df[df['age'] > age]['work_days']
     young = df[df['age'] <= age]['work_days']
     
-    fig2 = draw_hist(old, 'age > ' + str(age), young, 'age > ' + str(age))
+    fig2 = draw_hist(old, 'age > ' + str(age), young, 'age <= ' + str(age))
     st.pyplot(fig2)
     
     old = df[df['age'] > 35]['more_n_days']
