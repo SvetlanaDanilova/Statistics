@@ -34,10 +34,15 @@ def print_answer(answer, type):
             st.write("Принимаем альтернативную гипотезу о том, что люди постарше пропускают рабочие дни чаще")       
 
 def draw_hist(array1, label1, array2, label2):
+    bin_size = 1; min_edge = 0; max_edge = 8
+    N = (max_edge-min_edge)/bin_size
+    Nplus1 = N + 1
+    bin_list = np.linspace(min_edge, max_edge, Nplus1)
+
     fig = plt.figure(figsize=(15, 10))
     plt.title('Histogram Density Function')
-    plt.hist(array1, density=True, alpha=0.5, label=label1)
-    plt.hist(array2, density=True, alpha=0.5, label=label2)
+    plt.hist(array1, density=True, alpha=0.5, label=label1, bins=bin_list)
+    plt.hist(array2, density=True, alpha=0.5, label=label2, bins=bin_list)
     plt.xlabel('work_days')
     plt.ylabel('Density')
     plt.legend()
